@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Study Buddy</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-theme="light">
+  <nav>
+    <div class="logo">📚 AI Study Buddy</div>
+    <div class="dropdown">
+      <button class="theme-toggle">⚙️ Theme</button>
+      <div class="dropdown-content">
+        <label><input type="radio" name="theme" value="light" checked> Light</label>
+        <label><input type="radio" name="theme" value="dark"> Dark</label>
+        <label><input type="radio" name="theme" value="solarized"> Solarized</label>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <section class="input-section">
+      <textarea id="study-notes" placeholder="Paste your study notes here..."></textarea>
+      <button id="generate-btn">Generate Flashcards</button>
+    </section>
+
+    <section id="flashcards-container"></section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
