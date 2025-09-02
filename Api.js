@@ -86,3 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
+const supabase = createClient(
+  'https://bxoftpbkzbfzhxkoqjll.supabase.co', // https://bxotpfxabfazhbxqajli.supabase.co
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4b3RwZnhhYmZhemhieHFhamxpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3NDIxODcsImV4cCI6MjA3MjMxODE4N30.bEjZ5IOI5-5W4FVhQbqVnIvtedSVutnAWXu3wJgUq3Q' // your public API key
+);
