@@ -129,5 +129,3 @@ async function fetchFlashcards() {
 Pull requests welcome! For major changes, open an issue first to discuss what you’d like to change.
 
 ---
-
-Want help customizing this for your GitHub repo or adding badges, screenshots, or deployment links? I can polish it further.
