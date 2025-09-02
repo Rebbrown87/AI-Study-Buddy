@@ -4,9 +4,9 @@
   "description": "AI-powered flashcard generator for study notes",
   "main": "index.html",
   "scripts": {
-    "dev": "python -m http.server 8000",
+    "dev": "npx serve -s . -l 8000",
     "build": "echo 'Build complete - static files ready'",
-    "preview": "python -m http.server 8000"
+    "preview": "npx serve -s . -l 8000"
   },
   "keywords": ["ai", "study", "flashcards", "education"],
   "author": "",
