@@ -4,11 +4,19 @@
   "description": "AI-powered flashcard generator for study notes",
   "main": "index.html",
   "scripts": {
-    "dev": "npx serve -s . -l 8000",
+    "dev": "npx serve -s . -l 8000 --cors",
     "build": "echo 'Build complete - static files ready'",
     "preview": "npx serve -s . -l 8000"
   },
-  "keywords": ["ai", "study", "flashcards", "education"],
+  "keywords": [
+    "ai",
+    "study",
+    "flashcards",
+    "education"
+  ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "intasend-node": "^1.1.2"
+  }
 }
