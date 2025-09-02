@@ -11,14 +11,11 @@
 <body data-theme="light">
   <nav>
     <div class="logo">📚 AI Study Buddy</div>
-    <div class="dropdown">
-      <button class="theme-toggle">⚙️ Theme</button>
-      <div class="dropdown-content">
-        <label><input type="radio" name="theme" value="light" checked> Light</label>
-        <label><input type="radio" name="theme" value="dark"> Dark</label>
-        <label><input type="radio" name="theme" value="solarized"> Solarized</label>
-      </div>
-    </div>
+    <select id="themeDropdown" class="theme-dropdown">
+      <option value="light">🌞 Light</option>
+      <option value="dark">🌙 Dark</option>
+      <option value="solarized">🌅 Solarized</option>
+    </select>
   </nav>
 
   <main>

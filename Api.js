@@ -69,10 +69,48 @@ document.addEventListener('DOMContentLoaded', () => {
   initThemeSwitcher('themeDropdown');
 
   const generateBtn = document.getElementById('generateBtn');
+  const generateBtnActual = document.getElementById('generate-btn');
   const notesInput = document.getElementById('notesInput');
+  const notesInputActual = document.getElementById('study-notes');
 
-  generateBtn.addEventListener('click', async () => {
-    const notes = sanitizeInput(notesInput.value);
+  const actualGenerateBtn = generateBtnActual || generateBtn;
+  const actualNotesInput = notesInputActual || notesInput;
+
+  if (actualGenerateBtn && actualNotesInput) {
+    actualGenerateBtn.addEventListener('click', async () => {
+      const notes = sanitizeInput(actualNotesInput.value);
+      if (!notes) {
+        alert('Please paste some study notes first.');
+        return;
+      }
+
+      actualGenerateBtn.disabled = true;
+      actualGenerateBtn.textContent = 'Generating...';
+
+      // Simulate API call with sample flashcards
+      setTimeout(() => {
+        const sampleCards = [
+          { question: 'What is machine learning?', answer: 'A subset of AI that enables computers to learn without explicit programming.', tag: 'AI' },
+          { question: 'What is supervised learning?', answer: 'Learning with labeled training data to make predictions.', tag: 'ML' },
+          { question: 'What is a neural network?', answer: 'A computing system inspired by biological neural networks.', tag: 'Deep Learning' }
+        ];
+        
+        renderFlashcards('flashcards-container', sampleCards);
+        actualGenerateBtn.disabled = false;
+        actualGenerateBtn.textContent = 'Generate Flashcards';
+      }, 1500);
+    });
+  }
+});
+
+// Remove the old theme switching code since we're using the new system
+document.addEventListener('DOMContentLoaded', () => {
+  // Remove old radio button theme switching
+  const oldThemeInputs = document.querySelectorAll('input[name="theme"]');
+  oldThemeInputs.forEach(input => {
+    input.removeEventListener('change', () => {});
+  });
+});
     if (!notes) {
       alert('Please paste some study notes first.');
       return;
