@@ -1,0 +1,14 @@
+{
+  "name": "ai-study-buddy",
+  "version": "1.0.0",
+  "description": "AI-powered flashcard generator for study notes",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python -m http.server 8000",
+    "build": "echo 'Build complete - static files ready'",
+    "preview": "python -m http.server 8000"
+  },
+  "keywords": ["ai", "study", "flashcards", "education"],
+  "author": "",
+  "license": "MIT"
+}
