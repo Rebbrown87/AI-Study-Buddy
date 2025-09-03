@@ -3,30 +3,140 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Study Buddy</title>
+  <title>AI Study Buddy - Transform Your Learning</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="src/styles/payment.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body data-theme="light">
-  <nav>
-    <div class="logo">📚 AI Study Buddy</div>
-    <select id="themeDropdown" class="theme-dropdown">
-      <option value="light">🌞 Light</option>
-      <option value="dark">🌙 Dark</option>
-      <option value="solarized">🌅 Solarized</option>
-    </select>
+  <!-- Animated Background -->
+  <div class="animated-bg">
+    <div class="bg-layer layer-1"></div>
+    <div class="bg-layer layer-2"></div>
+    <div class="bg-layer layer-3"></div>
+    <div class="floating-elements">
+      <div class="float-element">🧠</div>
+      <div class="float-element">📚</div>
+      <div class="float-element">💡</div>
+      <div class="float-element">🎯</div>
+      <div class="float-element">⚡</div>
+      <div class="float-element">🚀</div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="glass-nav">
+    <div class="nav-content">
+      <div class="logo">
+        <span class="logo-icon">🤖</span>
+        <span class="logo-text">AI Study Buddy</span>
+      </div>
+      <div class="nav-controls">
+        <select id="themeDropdown" class="theme-dropdown glass-element">
+          <option value="light">🌞 Light Mode</option>
+          <option value="dark">🌙 Dark Mode</option>
+          <option value="solarized">🌅 Solarized</option>
+        </select>
+      </div>
+    </div>
   </nav>
 
-  <main>
-    <section class="input-section">
-      <textarea id="study-notes" placeholder="Paste your study notes here..."></textarea>
-      <button id="generate-btn">Generate Flashcards</button>
-    </section>
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="title-container">
+        <h1 class="epic-title">
+          <span class="title-line">Transform Your</span>
+          <span class="title-line gradient-text">Study Notes</span>
+          <span class="title-line">Into Smart Flashcards</span>
+        </h1>
+        <p class="hero-subtitle">
+          Powered by advanced AI to create personalized learning experiences
+        </p>
+      </div>
+      
+      <div class="stats-grid">
+        <div class="stat-item glass-element">
+          <div class="stat-number" data-target="10000">0</div>
+          <div class="stat-label">Flashcards Generated</div>
+        </div>
+        <div class="stat-item glass-element">
+          <div class="stat-number" data-target="95">0</div>
+          <div class="stat-label">Success Rate %</div>
+        </div>
+        <div class="stat-item glass-element">
+          <div class="stat-number" data-target="500">0</div>
+          <div class="stat-label">Happy Students</div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <section id="flashcards-container"></section>
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="content-container">
+      <!-- Input Section -->
+      <section class="input-section glass-element">
+        <div class="section-header">
+          <h2>📝 Paste Your Study Material</h2>
+          <p>Our AI will analyze and create intelligent flashcards</p>
+        </div>
+        
+        <div class="input-container">
+          <textarea 
+            id="study-notes" 
+            placeholder="Paste your study notes, textbook content, or any learning material here...&#10;&#10;Example:&#10;Photosynthesis is the process by which plants convert sunlight into energy. Chlorophyll absorbs light energy, which is then used to convert carbon dioxide and water into glucose and oxygen."
+            class="smart-textarea"
+          ></textarea>
+          
+          <div class="input-actions">
+            <div class="word-count">
+              <span id="word-count">0</span> words
+            </div>
+            <button id="generate-btn" class="generate-btn">
+              <span class="btn-icon">🧠</span>
+              <span class="btn-text">Generate Smart Flashcards</span>
+              <div class="btn-glow"></div>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Flashcards Display -->
+      <section id="flashcards-section" class="flashcards-section" style="display: none;">
+        <div class="section-header">
+          <h2>🎯 Your AI-Generated Flashcards</h2>
+          <div class="flashcard-controls">
+            <button id="shuffle-btn" class="control-btn">🔀 Shuffle</button>
+            <button id="export-btn" class="control-btn">📄 Export PDF</button>
+            <select id="category-filter" class="category-filter">
+              <option value="all">All Categories</option>
+            </select>
+          </div>
+        </div>
+        
+        <div id="flashcards-container" class="flashcards-grid"></div>
+      </section>
+    </div>
   </main>
 
-  <script src="Api.js"></script>
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="loading-overlay" style="display: none;">
+    <div class="loading-content">
+      <div class="ai-brain">
+        <div class="brain-pulse"></div>
+        🧠
+      </div>
+      <h3>AI is analyzing your notes...</h3>
+      <div class="loading-steps">
+        <div class="step active">📖 Reading content</div>
+        <div class="step">🔍 Identifying key concepts</div>
+        <div class="step">💡 Generating questions</div>
+        <div class="step">✨ Creating flashcards</div>
+      </div>
+    </div>
+  </div>
+
   <script type="module" src="app.js"></script>
   <script type="module">
     import { initPaymentModal } from './src/components/paymentModal.js';

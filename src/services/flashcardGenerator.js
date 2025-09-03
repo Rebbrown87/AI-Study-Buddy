@@ -1,144 +1,248 @@
-// Flashcard generation service using Hugging Face API
+// Enhanced Flashcard generation service with better AI processing
 class FlashcardGenerator {
   constructor() {
-    // Using a free model that doesn't require API key for demo
-    this.apiUrl = 'https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium';
-    this.fallbackEnabled = true;
+    this.categories = {
+      'Science': ['cell', 'atom', 'molecule', 'DNA', 'protein', 'enzyme', 'biology', 'chemistry', 'physics', 'theory', 'hypothesis', 'experiment'],
+      'History': ['war', 'empire', 'revolution', 'century', 'ancient', 'medieval', 'modern', 'civilization', 'culture', 'society'],
+      'Mathematics': ['equation', 'formula', 'theorem', 'proof', 'calculate', 'solve', 'function', 'derivative', 'integral', 'geometry'],
+      'Literature': ['author', 'novel', 'poem', 'character', 'theme', 'metaphor', 'symbolism', 'narrative', 'plot', 'setting'],
+      'Technology': ['computer', 'software', 'algorithm', 'database', 'network', 'programming', 'code', 'system', 'data'],
+      'Business': ['market', 'strategy', 'management', 'finance', 'economics', 'profit', 'revenue', 'customer', 'brand'],
+      'Psychology': ['behavior', 'cognitive', 'emotion', 'memory', 'learning', 'personality', 'social', 'mental', 'brain'],
+      'Medicine': ['disease', 'treatment', 'diagnosis', 'symptom', 'therapy', 'patient', 'medical', 'health', 'clinical']
+    };
   }
 
   async generateFlashcards(notes) {
-    if (!notes || notes.trim().length < 10) {
-      throw new Error('Please provide more detailed study notes (at least 10 characters)');
+    if (!notes || notes.trim().length < 20) {
+      throw new Error('Please provide more detailed study notes (at least 20 characters)');
     }
 
     try {
-      // For demo purposes, we'll use a smart text processing approach
-      // since free Hugging Face models have limitations
-      return this.processNotesIntoFlashcards(notes);
+      // Process notes with enhanced AI-like logic
+      const flashcards = this.processNotesIntelligently(notes);
+      
+      if (flashcards.length === 0) {
+        throw new Error('Could not generate flashcards from the provided content. Try adding more detailed information.');
+      }
+      
+      return flashcards;
     } catch (error) {
-      console.error('API Error:', error);
-      return this.generateFallbackFlashcards(notes);
+      console.error('Flashcard generation error:', error);
+      throw error;
     }
   }
 
-  processNotesIntoFlashcards(notes) {
-    const sentences = notes.split(/[.!?]+/).filter(s => s.trim().length > 10);
+  processNotesIntelligently(notes) {
     const flashcards = [];
+    
+    // Clean and prepare text
+    const cleanText = notes.replace(/\s+/g, ' ').trim();
+    const sentences = this.extractSentences(cleanText);
+    const keyTerms = this.extractKeyTerms(cleanText);
+    const definitions = this.extractDefinitions(cleanText);
+    
+    // Generate different types of flashcards
+    flashcards.push(...this.createDefinitionCards(definitions));
+    flashcards.push(...this.createConceptCards(keyTerms, sentences));
+    flashcards.push(...this.createFillInBlankCards(sentences));
+    flashcards.push(...this.createComprehensionCards(sentences));
+    
+    // Remove duplicates and limit results
+    const uniqueFlashcards = this.removeDuplicates(flashcards);
+    return uniqueFlashcards.slice(0, 12);
+  }
 
-    sentences.forEach((sentence, index) => {
-      const trimmed = sentence.trim();
-      if (trimmed.length > 15) {
-        // Extract key concepts and create questions
-        const words = trimmed.split(' ');
+  extractSentences(text) {
+    return text.split(/[.!?]+/)
+      .map(s => s.trim())
+      .filter(s => s.length > 15 && s.split(' ').length > 3);
+  }
+
+  extractKeyTerms(text) {
+    const words = text.toLowerCase().split(/\W+/);
+    const stopWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'this', 'that', 'these', 'those']);
+    
+    const termFreq = {};
+    words.forEach(word => {
+      if (word.length > 4 && !stopWords.has(word)) {
+        termFreq[word] = (termFreq[word] || 0) + 1;
+      }
+    });
+    
+    return Object.entries(termFreq)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 10)
+      .map(([term]) => term);
+  }
+
+  extractDefinitions(text) {
+    const definitions = [];
+    const definitionPatterns = [
+      /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+is\s+([^.!?]+)/g,
+      /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+refers to\s+([^.!?]+)/g,
+      /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+means\s+([^.!?]+)/g,
+      /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*:\s*([^.!?]+)/g
+    ];
+    
+    definitionPatterns.forEach(pattern => {
+      let match;
+      while ((match = pattern.exec(text)) !== null) {
+        definitions.push({
+          term: match[1].trim(),
+          definition: match[2].trim()
+        });
+      }
+    });
+    
+    return definitions;
+  }
+
+  createDefinitionCards(definitions) {
+    return definitions.map((def, index) => ({
+      id: `def-${Date.now()}-${index}`,
+      question: `What is ${def.term}?`,
+      answer: def.definition,
+      category: this.determineCategory(def.definition),
+      difficulty: this.calculateDifficulty(def.definition),
+      type: 'definition'
+    }));
+  }
+
+  createConceptCards(keyTerms, sentences) {
+    const cards = [];
+    
+    keyTerms.forEach((term, index) => {
+      const relevantSentence = sentences.find(s => 
+        s.toLowerCase().includes(term.toLowerCase())
+      );
+      
+      if (relevantSentence) {
+        cards.push({
+          id: `concept-${Date.now()}-${index}`,
+          question: `Explain the concept of "${term}" in the context of your study material.`,
+          answer: relevantSentence,
+          category: this.determineCategory(relevantSentence),
+          difficulty: this.calculateDifficulty(relevantSentence),
+          type: 'concept'
+        });
+      }
+    });
+    
+    return cards.slice(0, 4);
+  }
+
+  createFillInBlankCards(sentences) {
+    const cards = [];
+    
+    sentences.slice(0, 3).forEach((sentence, index) => {
+      const words = sentence.split(' ');
+      if (words.length > 8) {
+        // Find important words (longer than 4 characters, not common words)
+        const importantWords = words.filter(word => 
+          word.length > 4 && 
+          !['that', 'this', 'with', 'from', 'they', 'have', 'been', 'were', 'will', 'which', 'where', 'when'].includes(word.toLowerCase())
+        );
         
-        if (words.length > 5) {
-          // Create definition-style questions
-          const keyWords = words.filter(word => 
-            word.length > 4 && 
-            !['that', 'this', 'with', 'from', 'they', 'have', 'been', 'were', 'will'].includes(word.toLowerCase())
-          );
-
-          if (keyWords.length > 0) {
-            const keyWord = keyWords[0];
-            const question = `What is ${keyWord}?`;
-            const answer = trimmed;
-            
-            flashcards.push({
-              id: Date.now() + index,
-              question,
-              answer,
-              category: this.determineCategory(trimmed),
-              difficulty: this.calculateDifficulty(trimmed)
-            });
-          }
-        }
-
-        // Create fill-in-the-blank questions
-        if (words.length > 8) {
-          const importantWordIndex = Math.floor(words.length / 2);
-          const importantWord = words[importantWordIndex];
+        if (importantWords.length > 0) {
+          const targetWord = importantWords[Math.floor(Math.random() * importantWords.length)];
+          const blankSentence = sentence.replace(new RegExp(`\\b${targetWord}\\b`, 'gi'), '______');
           
-          if (importantWord.length > 3) {
-            const questionWords = [...words];
-            questionWords[importantWordIndex] = '______';
-            
-            flashcards.push({
-              id: Date.now() + index + 1000,
-              question: `Fill in the blank: ${questionWords.join(' ')}`,
-              answer: importantWord,
-              category: this.determineCategory(trimmed),
-              difficulty: this.calculateDifficulty(trimmed)
-            });
-          }
+          cards.push({
+            id: `blank-${Date.now()}-${index}`,
+            question: `Fill in the blank: ${blankSentence}`,
+            answer: targetWord,
+            category: this.determineCategory(sentence),
+            difficulty: this.calculateDifficulty(sentence) + 1,
+            type: 'fill-blank'
+          });
         }
       }
     });
-
-    // Ensure we have at least some flashcards
-    if (flashcards.length === 0) {
-      return this.generateFallbackFlashcards(notes);
-    }
-
-    return flashcards.slice(0, 10); // Limit to 10 flashcards
+    
+    return cards;
   }
 
-  generateFallbackFlashcards(notes) {
-    const words = notes.split(/\s+/).filter(word => word.length > 4);
-    const flashcards = [];
+  createComprehensionCards(sentences) {
+    const cards = [];
+    
+    sentences.slice(0, 2).forEach((sentence, index) => {
+      if (sentence.split(' ').length > 10) {
+        const concepts = this.extractConceptsFromSentence(sentence);
+        if (concepts.length > 0) {
+          cards.push({
+            id: `comp-${Date.now()}-${index}`,
+            question: `What are the key points about ${concepts[0]}?`,
+            answer: sentence,
+            category: this.determineCategory(sentence),
+            difficulty: this.calculateDifficulty(sentence),
+            type: 'comprehension'
+          });
+        }
+      }
+    });
+    
+    return cards;
+  }
 
-    // Create basic flashcards from the content
-    for (let i = 0; i < Math.min(5, words.length); i++) {
-      const word = words[i];
-      flashcards.push({
-        id: Date.now() + i,
-        question: `What does "${word}" refer to in your notes?`,
-        answer: `Review the context around "${word}" in your study material.`,
-        category: 'General',
-        difficulty: 2
-      });
-    }
-
-    if (flashcards.length === 0) {
-      flashcards.push({
-        id: Date.now(),
-        question: 'What is the main topic of your study notes?',
-        answer: 'Review your notes to identify the key concepts and themes.',
-        category: 'General',
-        difficulty: 1
-      });
-    }
-
-    return flashcards;
+  extractConceptsFromSentence(sentence) {
+    const words = sentence.split(' ');
+    return words.filter(word => 
+      word.length > 5 && 
+      /^[A-Z]/.test(word) && 
+      !['The', 'This', 'That', 'These', 'Those', 'When', 'Where', 'Which'].includes(word)
+    );
   }
 
   determineCategory(text) {
-    const categories = {
-      'Science': ['cell', 'atom', 'molecule', 'DNA', 'protein', 'enzyme', 'biology', 'chemistry', 'physics'],
-      'History': ['war', 'empire', 'revolution', 'century', 'ancient', 'medieval', 'modern'],
-      'Math': ['equation', 'formula', 'theorem', 'proof', 'calculate', 'solve', 'function'],
-      'Literature': ['author', 'novel', 'poem', 'character', 'theme', 'metaphor', 'symbolism'],
-      'Technology': ['computer', 'software', 'algorithm', 'database', 'network', 'programming']
-    };
-
     const lowerText = text.toLowerCase();
     
-    for (const [category, keywords] of Object.entries(categories)) {
-      if (keywords.some(keyword => lowerText.includes(keyword))) {
+    for (const [category, keywords] of Object.entries(this.categories)) {
+      const matchCount = keywords.filter(keyword => 
+        lowerText.includes(keyword.toLowerCase())
+      ).length;
+      
+      if (matchCount > 0) {
         return category;
       }
     }
     
-    return 'General';
+    // Advanced category detection based on context
+    if (/\b(study|learn|education|academic|school|university)\b/i.test(text)) {
+      return 'Education';
+    }
+    
+    return 'General Knowledge';
   }
 
   calculateDifficulty(text) {
-    const complexWords = text.split(' ').filter(word => word.length > 8).length;
-    const sentenceLength = text.split(' ').length;
+    const words = text.split(' ');
+    const complexWords = words.filter(word => word.length > 8).length;
+    const sentenceLength = words.length;
+    const technicalTerms = words.filter(word => 
+      /^[A-Z]/.test(word) && word.length > 6
+    ).length;
     
-    if (complexWords > 3 || sentenceLength > 20) return 4;
-    if (complexWords > 1 || sentenceLength > 15) return 3;
-    if (sentenceLength > 10) return 2;
-    return 1;
+    let difficulty = 1;
+    
+    if (sentenceLength > 20) difficulty++;
+    if (complexWords > 2) difficulty++;
+    if (technicalTerms > 1) difficulty++;
+    if (text.includes('however') || text.includes('therefore') || text.includes('consequently')) difficulty++;
+    
+    return Math.min(difficulty, 5);
+  }
+
+  removeDuplicates(flashcards) {
+    const seen = new Set();
+    return flashcards.filter(card => {
+      const key = card.question.toLowerCase().trim();
+      if (seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
   }
 }
 
