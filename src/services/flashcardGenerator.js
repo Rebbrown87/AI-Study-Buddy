@@ -2,7 +2,7 @@
 class FlashcardGenerator {
   constructor() {
     this.categories = {
-      'Science': ['cell', 'atom', 'molecule', 'DNA', 'protein', 'enzyme', 'biology', 'chemistry', 'physics', 'theory', 'hypothesis', 'experiment'],
+      'Science': ['cell', 'atom', 'molecule', 'DNA', 'protein', 'enzyme', 'biology', 'chemistry', 'physics', 'theory', 'hypothesis', 'experiment', 'photosynthesis', 'chlorophyll', 'glucose', 'oxygen'],
       'History': ['war', 'empire', 'revolution', 'century', 'ancient', 'medieval', 'modern', 'civilization', 'culture', 'society'],
       'Mathematics': ['equation', 'formula', 'theorem', 'proof', 'calculate', 'solve', 'function', 'derivative', 'integral', 'geometry'],
       'Literature': ['author', 'novel', 'poem', 'character', 'theme', 'metaphor', 'symbolism', 'narrative', 'plot', 'setting'],
@@ -19,6 +19,7 @@ class FlashcardGenerator {
     }
 
     try {
+      console.log('Processing notes with AI logic...');
       // Process notes with enhanced AI-like logic
       const flashcards = this.processNotesIntelligently(notes);
       
@@ -26,6 +27,7 @@ class FlashcardGenerator {
         throw new Error('Could not generate flashcards from the provided content. Try adding more detailed information.');
       }
       
+      console.log(`Successfully generated ${flashcards.length} flashcards`);
       return flashcards;
     } catch (error) {
       console.error('Flashcard generation error:', error);
@@ -41,6 +43,10 @@ class FlashcardGenerator {
     const sentences = this.extractSentences(cleanText);
     const keyTerms = this.extractKeyTerms(cleanText);
     const definitions = this.extractDefinitions(cleanText);
+    
+    console.log('Extracted sentences:', sentences.length);
+    console.log('Extracted key terms:', keyTerms);
+    console.log('Extracted definitions:', definitions.length);
     
     // Generate different types of flashcards
     flashcards.push(...this.createDefinitionCards(definitions));
@@ -120,7 +126,7 @@ class FlashcardGenerator {
       if (relevantSentence) {
         cards.push({
           id: `concept-${Date.now()}-${index}`,
-          question: `Explain the concept of "${term}" in the context of your study material.`,
+          question: `Explain the concept of "${term}" based on your study material.`,
           answer: relevantSentence,
           category: this.determineCategory(relevantSentence),
           difficulty: this.calculateDifficulty(relevantSentence),

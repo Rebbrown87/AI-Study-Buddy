@@ -1,11 +1,10 @@
-import FlashcardGenerator from './src/services/flashcardGenerator.js';
-
 // Global state
 let currentFlashcards = [];
 let currentTheme = 'dark';
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('App initializing...');
   initializeTheme();
   initializeCounters();
   initializeFlashcardGenerator();
@@ -16,6 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
 // Theme Management
 function initializeTheme() {
   const themeDropdown = document.getElementById('themeDropdown');
+  if (!themeDropdown) {
+    console.error('Theme dropdown not found');
+    return;
+  }
+
   const savedTheme = localStorage.getItem('selectedTheme') || 'dark';
   
   currentTheme = savedTheme;
@@ -24,6 +28,8 @@ function initializeTheme() {
 
   themeDropdown.addEventListener('change', (e) => {
     const selectedTheme = e.target.value;
+    console.log('Theme changed to:', selectedTheme);
+    
     currentTheme = selectedTheme;
     document.body.setAttribute('data-theme', selectedTheme);
     localStorage.setItem('selectedTheme', selectedTheme);
@@ -33,6 +39,8 @@ function initializeTheme() {
     setTimeout(() => {
       document.body.style.transition = '';
     }, 400);
+    
+    showNotification(`Theme changed to ${selectedTheme}`, 'success');
   });
 }
 
@@ -83,6 +91,11 @@ function initializeWordCounter() {
   const textarea = document.getElementById('study-notes');
   const wordCountElement = document.getElementById('word-count');
 
+  if (!textarea || !wordCountElement) {
+    console.error('Word counter elements not found');
+    return;
+  }
+
   textarea.addEventListener('input', () => {
     const text = textarea.value.trim();
     const wordCount = text ? text.split(/\s+/).length : 0;
@@ -107,6 +120,11 @@ function initializeFlashcardGenerator() {
   const flashcardsSection = document.getElementById('flashcards-section');
   const loadingOverlay = document.getElementById('loading-overlay');
 
+  if (!generateBtn || !notesTextarea) {
+    console.error('Required elements not found');
+    return;
+  }
+
   generateBtn.addEventListener('click', async () => {
     const notes = notesTextarea.value.trim();
     
@@ -124,12 +142,18 @@ function initializeFlashcardGenerator() {
   });
 
   async function generateFlashcards(notes) {
+    console.log('Generating flashcards for notes:', notes.substring(0, 100) + '...');
+    
     // Show loading overlay with animation
     showLoadingSteps();
     
     try {
+      // Import and use the flashcard generator
+      const { default: FlashcardGenerator } = await import('./src/services/flashcardGenerator.js');
       const flashcards = await FlashcardGenerator.generateFlashcards(notes);
       currentFlashcards = flashcards;
+      
+      console.log('Generated flashcards:', flashcards);
       
       setTimeout(() => {
         hideLoadingOverlay();
@@ -153,6 +177,8 @@ function initializeFlashcardGenerator() {
   }
 
   function showLoadingSteps() {
+    if (!loadingOverlay) return;
+    
     loadingOverlay.style.display = 'flex';
     const steps = loadingOverlay.querySelectorAll('.step');
     
@@ -165,10 +191,14 @@ function initializeFlashcardGenerator() {
   }
 
   function hideLoadingOverlay() {
-    loadingOverlay.style.display = 'none';
+    if (loadingOverlay) {
+      loadingOverlay.style.display = 'none';
+    }
   }
 
   function displayFlashcards(flashcards) {
+    if (!flashcardsContainer) return;
+    
     if (!flashcards || flashcards.length === 0) {
       flashcardsContainer.innerHTML = `
         <div class="no-cards glass-element">
@@ -213,10 +243,13 @@ function initializeFlashcardGenerator() {
 
     // Initialize flashcard controls
     initializeFlashcardControls();
+    showNotification(`Generated ${flashcards.length} flashcards successfully!`, 'success');
   }
 
   function updateCategoryFilter(flashcards) {
     const categoryFilter = document.getElementById('category-filter');
+    if (!categoryFilter) return;
+    
     const categories = [...new Set(flashcards.map(card => card.category))];
     
     categoryFilter.innerHTML = '<option value="all">All Categories</option>';
@@ -235,13 +268,15 @@ function initializeFlashcardControls() {
   const exportBtn = document.getElementById('export-btn');
   const categoryFilter = document.getElementById('category-filter');
 
-  shuffleBtn?.addEventListener('click', shuffleFlashcards);
-  exportBtn?.addEventListener('click', exportToPDF);
-  categoryFilter?.addEventListener('change', filterByCategory);
+  if (shuffleBtn) shuffleBtn.addEventListener('click', shuffleFlashcards);
+  if (exportBtn) exportBtn.addEventListener('click', exportToPDF);
+  if (categoryFilter) categoryFilter.addEventListener('change', filterByCategory);
 }
 
 function shuffleFlashcards() {
   const container = document.getElementById('flashcards-container');
+  if (!container) return;
+  
   const cards = Array.from(container.children);
   
   // Shuffle array
@@ -368,11 +403,11 @@ function showNotification(message, type = 'info') {
 
 // Enhanced interactions
 document.addEventListener('mousemove', (e) => {
-  const cursor = document.querySelector('.cursor');
+  let cursor = document.querySelector('.cursor');
   if (!cursor) {
-    const newCursor = document.createElement('div');
-    newCursor.className = 'cursor';
-    newCursor.style.cssText = `
+    cursor = document.createElement('div');
+    cursor.className = 'cursor';
+    cursor.style.cssText = `
       position: fixed;
       width: 20px;
       height: 20px;
@@ -383,12 +418,11 @@ document.addEventListener('mousemove', (e) => {
       opacity: 0.3;
       transition: all 0.1s ease;
     `;
-    document.body.appendChild(newCursor);
+    document.body.appendChild(cursor);
   }
   
-  const actualCursor = document.querySelector('.cursor');
-  actualCursor.style.left = e.clientX - 10 + 'px';
-  actualCursor.style.top = e.clientY - 10 + 'px';
+  cursor.style.left = e.clientX - 10 + 'px';
+  cursor.style.top = e.clientY - 10 + 'px';
 });
 
 // Add particle effect on click
