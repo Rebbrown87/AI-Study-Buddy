@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initializeFlashcardGenerator();
   initializeWordCounter();
   initializeScrollEffects();
+  initializeTabNavigation();
+  initializeNotesGenerator();
 });
 
 // Theme Management
@@ -42,6 +44,196 @@ function initializeTheme() {
     
     showNotification(`Theme changed to ${selectedTheme}`, 'success');
   });
+}
+
+// Tab Navigation
+function initializeTabNavigation() {
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
+
+  tabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const targetTab = button.getAttribute('data-tab');
+      
+      // Remove active class from all buttons and contents
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      tabContents.forEach(content => {
+        content.classList.remove('active');
+        content.style.display = 'none';
+      });
+      
+      // Add active class to clicked button and corresponding content
+      button.classList.add('active');
+      const targetContent = document.getElementById(`${targetTab}-tab`);
+      if (targetContent) {
+        targetContent.classList.add('active');
+        targetContent.style.display = 'block';
+      }
+      
+      showNotification(`Switched to ${targetTab === 'flashcards' ? 'Flashcard Generator' : 'AI Notes Generator'}`, 'info');
+    });
+  });
+}
+
+// Notes Generator
+function initializeNotesGenerator() {
+  const generateNotesBtn = document.getElementById('generate-notes-btn');
+  const topicInput = document.getElementById('notes-topic');
+  const levelSelect = document.getElementById('notes-level');
+  const includeExamples = document.getElementById('include-examples');
+  const includeDiagrams = document.getElementById('include-diagrams');
+  const notesSection = document.getElementById('generated-notes-section');
+  const notesContent = document.getElementById('notes-content');
+  const savePdfBtn = document.getElementById('save-pdf-btn');
+  const copyNotesBtn = document.getElementById('copy-notes-btn');
+  const regenerateBtn = document.getElementById('regenerate-notes-btn');
+
+  if (!generateNotesBtn || !topicInput) {
+    console.error('Notes generator elements not found');
+    return;
+  }
+
+  generateNotesBtn.addEventListener('click', async () => {
+    const topic = topicInput.value.trim();
+    const level = levelSelect.value;
+    const withExamples = includeExamples.checked;
+    const withDiagrams = includeDiagrams.checked;
+    
+    if (!topic) {
+      showNotification('Please enter a topic to generate notes.', 'warning');
+      return;
+    }
+
+    if (topic.length < 3) {
+      showNotification('Please provide a more specific topic (at least 3 characters).', 'warning');
+      return;
+    }
+
+    await generateNotes(topic, level, withExamples, withDiagrams);
+  });
+
+  savePdfBtn?.addEventListener('click', () => saveToPDF());
+  copyNotesBtn?.addEventListener('click', () => copyNotesToClipboard());
+  regenerateBtn?.addEventListener('click', () => {
+    const topic = topicInput.value.trim();
+    const level = levelSelect.value;
+    const withExamples = includeExamples.checked;
+    const withDiagrams = includeDiagrams.checked;
+    if (topic) generateNotes(topic, level, withExamples, withDiagrams);
+  });
+
+  async function generateNotes(topic, level, withExamples, withDiagrams) {
+    console.log('Generating notes for topic:', topic);
+    
+    showLoadingSteps();
+    
+    try {
+      // Import and use the notes generator
+      const { default: NotesGenerator } = await import('./src/services/notesGenerator.js');
+      const notes = await NotesGenerator.generateNotes(topic, level, withExamples, withDiagrams);
+      
+      console.log('Generated notes:', notes);
+      
+      setTimeout(() => {
+        hideLoadingOverlay();
+        displayNotes(notes, topic);
+        notesSection.style.display = 'block';
+        
+        // Smooth scroll to notes
+        setTimeout(() => {
+          notesSection.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
+        }, 300);
+      }, 2500);
+      
+    } catch (error) {
+      console.error('Error generating notes:', error);
+      hideLoadingOverlay();
+      showNotification(`Error generating notes: ${error.message}`, 'error');
+    }
+  }
+
+  function displayNotes(notes, topic) {
+    if (!notesContent) return;
+    
+    if (!notes || notes.trim().length === 0) {
+      notesContent.innerHTML = `
+        <div class="no-notes">
+          <h3>🤔 No notes generated</h3>
+          <p>Try providing a more specific topic or check your internet connection.</p>
+        </div>
+      `;
+      return;
+    }
+
+    notesContent.innerHTML = notes;
+    showNotification(`Generated comprehensive notes on "${topic}"!`, 'success');
+  }
+
+  function saveToPDF() {
+    if (!notesContent || !notesContent.textContent.trim()) {
+      showNotification('No notes to save. Generate notes first.', 'warning');
+      return;
+    }
+
+    try {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      // Get the topic for the filename
+      const topic = topicInput.value.trim() || 'Study Notes';
+      
+      // Add title
+      doc.setFontSize(20);
+      doc.setFont(undefined, 'bold');
+      doc.text(`Study Notes: ${topic}`, 20, 30);
+      
+      // Add generated date
+      doc.setFontSize(12);
+      doc.setFont(undefined, 'normal');
+      doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, 45);
+      
+      // Add content
+      const content = notesContent.textContent;
+      const lines = doc.splitTextToSize(content, 170);
+      
+      let yPosition = 60;
+      const pageHeight = doc.internal.pageSize.height;
+      
+      lines.forEach(line => {
+        if (yPosition > pageHeight - 20) {
+          doc.addPage();
+          yPosition = 20;
+        }
+        doc.text(line, 20, yPosition);
+        yPosition += 7;
+      });
+      
+      // Save the PDF
+      doc.save(`${topic.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_notes.pdf`);
+      showNotification('Notes saved as PDF successfully!', 'success');
+      
+    } catch (error) {
+      console.error('PDF generation error:', error);
+      showNotification('Error saving PDF. Please try again.', 'error');
+    }
+  }
+
+  function copyNotesToClipboard() {
+    if (!notesContent || !notesContent.textContent.trim()) {
+      showNotification('No notes to copy. Generate notes first.', 'warning');
+      return;
+    }
+
+    navigator.clipboard.writeText(notesContent.textContent).then(() => {
+      showNotification('Notes copied to clipboard!', 'success');
+    }).catch(err => {
+      console.error('Copy failed:', err);
+      showNotification('Failed to copy notes. Please try again.', 'error');
+    });
+  }
 }
 
 // Animated Counters
