@@ -2,6 +2,29 @@
 let currentFlashcards = [];
 let currentTheme = 'dark';
 
+// Global loading functions
+function showLoadingSteps() {
+  const loadingOverlay = document.getElementById('loading-overlay');
+  if (!loadingOverlay) return;
+  
+  loadingOverlay.style.display = 'flex';
+  const steps = loadingOverlay.querySelectorAll('.step');
+  
+  steps.forEach((step, index) => {
+    setTimeout(() => {
+      steps.forEach(s => s.classList.remove('active'));
+      step.classList.add('active');
+    }, index * 750);
+  });
+}
+
+function hideLoadingOverlay() {
+  const loadingOverlay = document.getElementById('loading-overlay');
+  if (loadingOverlay) {
+    loadingOverlay.style.display = 'none';
+  }
+}
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
   console.log('App initializing...');
@@ -365,26 +388,6 @@ function initializeFlashcardGenerator() {
       console.error('Error generating flashcards:', error);
       hideLoadingOverlay();
       showNotification(`Error generating flashcards: ${error.message}`, 'error');
-    }
-  }
-
-  function showLoadingSteps() {
-    if (!loadingOverlay) return;
-    
-    loadingOverlay.style.display = 'flex';
-    const steps = loadingOverlay.querySelectorAll('.step');
-    
-    steps.forEach((step, index) => {
-      setTimeout(() => {
-        steps.forEach(s => s.classList.remove('active'));
-        step.classList.add('active');
-      }, index * 750);
-    });
-  }
-
-  function hideLoadingOverlay() {
-    if (loadingOverlay) {
-      loadingOverlay.style.display = 'none';
     }
   }
 
