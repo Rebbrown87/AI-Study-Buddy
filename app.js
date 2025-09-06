@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initializeScrollEffects();
   initializeTabNavigation();
   initializeNotesGenerator();
+  updatePremiumUI();
 });
 
 // Theme Management

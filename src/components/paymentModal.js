@@ -12,7 +12,7 @@ export function createPaymentModal() {
           <div class="plan-selection">
             <div class="plan-card" data-plan="basic">
               <h3>Basic Plan</h3>
-              <div class="price">KES 5.00</div>
+              <div class="price">$5.00</div>
               <p>50 flashcards per month</p>
               <ul>
                 <li>✓ AI-generated flashcards</li>
@@ -23,7 +23,7 @@ export function createPaymentModal() {
             <div class="plan-card featured" data-plan="premium">
               <div class="popular-badge">Most Popular</div>
               <h3>Premium Plan</h3>
-              <div class="price">KES 15.00</div>
+              <div class="price">$15.00</div>
               <p>Unlimited flashcards</p>
               <ul>
                 <li>✓ Unlimited AI flashcards</li>
@@ -48,15 +48,15 @@ export function createPaymentModal() {
               <div class="payment-methods">
                 <label class="payment-method">
                   <input type="radio" name="method" value="M-PESA" checked>
-                  <span>📱 M-PESA</span>
+                  <span>💳 PayPal</span>
                 </label>
                 <label class="payment-method">
                   <input type="radio" name="method" value="CARD">
-                  <span>💳 Credit/Debit Card</span>
+                  <span>💳 Stripe</span>
                 </label>
               </div>
               <button type="submit" class="pay-btn">
-                Pay Now - <span id="selected-amount">KES 15.00</span>
+                Pay Now - <span id="selected-amount">$15.00</span>
               </button>
             </form>
           </div>
@@ -98,6 +98,7 @@ export function initPaymentModal() {
         selectedPlan = card.dataset.plan;
         
         const amount = selectedPlan === 'basic' ? 'KES 5.00' : 'KES 15.00';
+        const amount = selectedPlan === 'basic' ? '$5.00' : '$15.00';
         selectedAmount.textContent = amount;
         
         paymentForm.style.display = 'block';

@@ -925,6 +925,113 @@ body {
   color: var(--text-primary);
 }
 
+/* Premium Modal Styles */
+.premium-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+}
+
+.premium-modal .modal-content {
+  max-width: 600px;
+  width: 90%;
+  padding: 2rem;
+  text-align: center;
+  animation: slideInUp 0.3s ease-out;
+}
+
+.premium-modal h2 {
+  color: var(--accent-primary);
+  margin-bottom: 1rem;
+  font-size: 2rem;
+}
+
+.premium-plans {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.premium-plans .plan {
+  background: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 2px solid var(--glass-border);
+  transition: all 0.3s ease;
+}
+
+.premium-plans .plan.featured {
+  border-color: var(--accent-primary);
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(124, 58, 237, 0.1));
+}
+
+.premium-plans .plan h3 {
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.modal-actions .upgrade-btn {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-actions .upgrade-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+}
+
+.modal-actions .close-btn {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-actions .close-btn:hover {
+  background: var(--card-bg);
+}
+
+/* Premium Badge */
+.premium-badge {
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  color: #1a1a1a;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .main-container {

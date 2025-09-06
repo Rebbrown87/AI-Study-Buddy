@@ -9,13 +9,13 @@ export const intaSendConfig = {
 // Payment plans for premium features
 export const paymentPlans = {
   basic: {
-    amount: 500, // KES 5.00
-    currency: 'KES',
+    amount: 5.00, // USD 5.00
+    currency: 'USD',
     description: 'Basic Plan - 50 flashcards per month'
   },
   premium: {
-    amount: 1500, // KES 15.00
-    currency: 'KES', 
+    amount: 15.00, // USD 15.00
+    currency: 'USD', 
     description: 'Premium Plan - Unlimited flashcards'
   }
 };
