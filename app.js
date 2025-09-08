@@ -38,6 +38,37 @@ document.addEventListener('DOMContentLoaded', () => {
   initializePremiumSystem();
 });
 
+// Premium System
+function initializePremiumSystem() {
+  // Check if user has premium status
+  const premiumStatus = localStorage.getItem('premiumStatus');
+  const premiumExpiry = localStorage.getItem('premiumExpiry');
+  
+  if (premiumStatus && premiumExpiry) {
+    const expiryDate = new Date(premiumExpiry);
+    const now = new Date();
+    
+    if (now < expiryDate) {
+      // User has active premium
+      updatePremiumUI(true);
+    } else {
+      // Premium expired
+      localStorage.removeItem('premiumStatus');
+      localStorage.removeItem('premiumExpiry');
+      updatePremiumUI(false);
+    }
+  } else {
+    updatePremiumUI(false);
+  }
+}
+
+function updatePremiumUI(isPremium) {
+  const premiumBadge = document.querySelector('.premium-badge');
+  if (premiumBadge) {
+    premiumBadge.style.display = isPremium ? 'inline-block' : 'none';
+  }
+}
+
 // Theme Management
 function initializeTheme() {
   const themeDropdown = document.getElementById('themeDropdown');
