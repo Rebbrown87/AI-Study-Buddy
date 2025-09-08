@@ -62,6 +62,24 @@ function initializePremiumSystem() {
   }
 }
 
+function checkPremiumFeature(featureName) {
+  const premiumStatus = localStorage.getItem('premiumStatus');
+  const premiumExpiry = localStorage.getItem('premiumExpiry');
+  
+  if (premiumStatus && premiumExpiry) {
+    const expiryDate = new Date(premiumExpiry);
+    const now = new Date();
+    
+    if (now < expiryDate) {
+      return true; // User has active premium
+    }
+  }
+  
+  // Show premium upgrade modal
+  showPremiumModal();
+  return false;
+}
+
 function updatePremiumUI(isPremium) {
   const premiumBadge = document.querySelector('.premium-badge');
   if (premiumBadge) {
