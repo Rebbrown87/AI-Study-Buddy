@@ -80,6 +80,101 @@ function checkPremiumFeature(featureName) {
   return false;
 }
 
+// Show Premium Modal Function
+function showPremiumModal() {
+  // Remove existing modal if present
+  const existingModal = document.querySelector('.premium-modal');
+  if (existingModal) {
+    existingModal.remove();
+  }
+
+  const modal = document.createElement('div');
+  modal.className = 'premium-modal';
+  modal.innerHTML = `
+    <div class="modal-overlay">
+      <div class="modal-content glass-element">
+        <div class="modal-header">
+          <h2>🚀 Upgrade to Premium</h2>
+          <button class="close-btn">&times;</button>
+        </div>
+        <p class="modal-subtitle">Unlock PDF export and premium features</p>
+        <div class="premium-plans">
+          <div class="plan" data-plan="basic">
+            <h3>Basic Plan</h3>
+            <div class="price">$5<span>/month</span></div>
+            <p>Perfect for casual learners</p>
+            <ul class="features">
+              <li>✓ 50 flashcards per month</li>
+              <li>✓ PDF export</li>
+              <li>✓ Basic themes</li>
+              <li>✓ Notes generator</li>
+            </ul>
+            <button class="select-plan-btn" data-plan="basic" data-price="5">
+              Choose Basic - $5
+            </button>
+          </div>
+          <div class="plan featured" data-plan="premium">
+            <div class="popular-badge">Most Popular</div>
+            <h3>Premium Plan</h3>
+            <div class="price">$15<span>/month</span></div>
+            <p>For serious students</p>
+            <ul class="features">
+              <li>✓ Unlimited flashcards</li>
+              <li>✓ PDF export</li>
+              <li>✓ All themes</li>
+              <li>✓ Advanced export options</li>
+              <li>✓ Priority support</li>
+              <li>✓ Custom categories</li>
+            </ul>
+            <button class="select-plan-btn" data-plan="premium" data-price="15">
+              Choose Premium - $15
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  // Add event listeners
+  const closeBtn = modal.querySelector('.close-btn');
+  const overlay = modal.querySelector('.modal-overlay');
+  const planButtons = modal.querySelectorAll('.select-plan-btn');
+
+  closeBtn.addEventListener('click', () => modal.remove());
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) modal.remove();
+  });
+
+  planButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      const plan = e.target.getAttribute('data-plan');
+      const price = e.target.getAttribute('data-price');
+      handlePremiumUpgrade(plan, price);
+      modal.remove();
+    });
+  });
+}
+
+// Handle Premium Upgrade
+function handlePremiumUpgrade(plan, price) {
+  // Simulate payment process
+  showNotification('Processing payment...', 'info');
+  
+  setTimeout(() => {
+    // Set premium status
+    localStorage.setItem('premiumStatus', plan);
+    const expiryDate = new Date();
+    expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month from now
+    localStorage.setItem('premiumExpiry', expiryDate.toISOString());
+    
+    // Update UI
+    updatePremiumUI(true);
+    
+    showNotification(`🎉 Welcome to ${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan! PDF export is now available.`, 'success');
+  }, 2000);
+}
 function updatePremiumUI(isPremium) {
   const premiumBadge = document.querySelector('.premium-badge');
   if (premiumBadge) {
