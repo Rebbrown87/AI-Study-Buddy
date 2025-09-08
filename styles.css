@@ -938,98 +938,178 @@ body {
   justify-content: center;
   z-index: 1000;
   backdrop-filter: blur(10px);
+  animation: fadeIn 0.3s ease-out;
 }
 
 .premium-modal .modal-content {
   max-width: 600px;
   width: 90%;
   padding: 2rem;
-  text-align: center;
   animation: slideInUp 0.3s ease-out;
 }
 
-.premium-modal h2 {
-  color: var(--accent-primary);
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.modal-header h2 {
+  color: var(--accent-primary);
+  margin: 0;
   font-size: 2rem;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-primary);
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+  background: var(--card-bg);
+  transform: scale(1.1);
+}
+
+.modal-subtitle {
+  text-align: center;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
 }
 
 .premium-plans {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
-  margin: 2rem 0;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-.premium-plans .plan {
+.plan {
   background: var(--card-bg);
-  padding: 1.5rem;
+  padding: 2rem;
   border-radius: 12px;
   border: 2px solid var(--glass-border);
   transition: all 0.3s ease;
+  position: relative;
+  text-align: center;
 }
 
-.premium-plans .plan.featured {
+.plan:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+.plan.featured {
   border-color: var(--accent-primary);
   background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(124, 58, 237, 0.1));
 }
 
-.premium-plans .plan h3 {
+.popular-badge {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent-primary);
+  color: white;
+  padding: 0.25rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.plan h3 {
   color: var(--text-primary);
-  margin-bottom: 0.5rem;
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
 }
 
-.modal-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
+.price {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--accent-primary);
+  margin-bottom: 1rem;
 }
 
-.modal-actions .upgrade-btn {
+.price span {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-weight: normal;
+}
+
+.features {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+  text-align: left;
+}
+
+.features li {
+  padding: 0.5rem 0;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.select-plan-btn {
+  width: 100%;
   background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   color: white;
   border: none;
-  padding: 1rem 2rem;
+  padding: 1rem 1.5rem;
   border-radius: 8px;
   font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  margin-top: 1rem;
 }
 
-.modal-actions .upgrade-btn:hover {
+.select-plan-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
 }
 
-.modal-actions .close-btn {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  color: var(--text-primary);
-  padding: 1rem 2rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.select-plan-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
-.modal-actions .close-btn:hover {
-  background: var(--card-bg);
-}
-
-/* Premium Badge */
-.premium-badge {
-  background: linear-gradient(135deg, #ffd700, #ffed4e);
-  color: #1a1a1a;
+/* Upgrade Button */
+.upgrade-btn {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  color: white;
+  border: none;
   padding: 0.5rem 1rem;
-  border-radius: 20px;
+  border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 600;
-  animation: shimmer 2s ease-in-out infinite;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-left: 1rem;
 }
 
-@keyframes shimmer {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.8; }
+.upgrade-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+}
+
+.upgrade-btn.premium-active {
+  background: linear-gradient(135deg, #10b981, #059669);
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from { box-shadow: 0 0 10px rgba(16, 185, 129, 0.3); }
+  to { box-shadow: 0 0 20px rgba(16, 185, 129, 0.6); }
 }
 
 /* Responsive Design */

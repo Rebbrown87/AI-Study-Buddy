@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initializeScrollEffects();
   initializeTabNavigation();
   initializeNotesGenerator();
-  updatePremiumUI();
+  initializePremiumSystem();
 });
 
 // Theme Management
@@ -275,6 +275,11 @@ function initializeNotesGenerator() {
   }
 
   function saveToPDF() {
+    // Check for premium access
+    if (!checkPremiumFeature('pdf-export')) {
+      return;
+    }
+    
     if (!notesContent || !notesContent.textContent.trim()) {
       showNotification('No notes to save. Generate notes first.', 'warning');
       return;
@@ -681,7 +686,71 @@ function filterByCategory(e) {
 }
 
 function exportToPDF() {
-  showNotification('PDF export feature coming soon! 📄', 'info');
+  // Check for premium access
+  if (!checkPremiumFeature('pdf-export')) {
+    return;
+  }
+  
+  if (!currentFlashcards || currentFlashcards.length === 0) {
+    showNotification('No flashcards to export. Generate flashcards first.', 'warning');
+    return;
+  }
+  
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // Add title
+    doc.setFontSize(20);
+    doc.setFont(undefined, 'bold');
+    doc.text('AI Study Buddy - Flashcards', 20, 30);
+    
+    // Add generated date
+    doc.setFontSize(12);
+    doc.setFont(undefined, 'normal');
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, 45);
+    
+    let yPosition = 60;
+    const pageHeight = doc.internal.pageSize.height;
+    
+    currentFlashcards.forEach((card, index) => {
+      if (yPosition > pageHeight - 60) {
+        doc.addPage();
+        yPosition = 20;
+      }
+      
+      // Card number
+      doc.setFontSize(14);
+      doc.setFont(undefined, 'bold');
+      doc.text(`Card ${index + 1} - ${card.category}`, 20, yPosition);
+      yPosition += 10;
+      
+      // Question
+      doc.setFontSize(12);
+      doc.setFont(undefined, 'bold');
+      doc.text('Q: ', 20, yPosition);
+      doc.setFont(undefined, 'normal');
+      const questionLines = doc.splitTextToSize(card.question, 150);
+      doc.text(questionLines, 30, yPosition);
+      yPosition += questionLines.length * 7 + 5;
+      
+      // Answer
+      doc.setFont(undefined, 'bold');
+      doc.text('A: ', 20, yPosition);
+      doc.setFont(undefined, 'normal');
+      const answerLines = doc.splitTextToSize(card.answer, 150);
+      doc.text(answerLines, 30, yPosition);
+      yPosition += answerLines.length * 7 + 15;
+    });
+    
+    // Save the PDF
+    doc.save('ai_study_buddy_flashcards.pdf');
+    showNotification('Flashcards exported to PDF successfully!', 'success');
+    
+  } catch (error) {
+    console.error('PDF generation error:', error);
+    showNotification('Error exporting PDF. Please try again.', 'error');
+  }
 }
 
 // Global toggle function for flashcard answers
