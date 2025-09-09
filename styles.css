@@ -1182,6 +1182,15 @@ body {
   .notes-controls {
     flex-direction: column;
   }
+  
+  .premium-status {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .theme-select {
+    width: 100%;
+  }
 }
 
 @media (max-width: 480px) {

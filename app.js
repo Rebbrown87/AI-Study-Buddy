@@ -36,6 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initializeTabNavigation();
   initializeNotesGenerator();
   initializePremiumSystem();
+  initializeSettings();
+  initializeAboutModal();
 });
 
 // Premium System
@@ -176,10 +178,268 @@ function handlePremiumUpgrade(plan, price) {
   }, 2000);
 }
 function updatePremiumUI(isPremium) {
-  const premiumBadge = document.querySelector('.premium-badge');
-  if (premiumBadge) {
-    premiumBadge.style.display = isPremium ? 'inline-block' : 'none';
+  // Add premium badge to navigation if premium
+  let premiumBadge = document.querySelector('.premium-badge');
+  
+  if (isPremium && !premiumBadge) {
+    premiumBadge = document.createElement('span');
+    premiumBadge.className = 'premium-badge';
+    premiumBadge.textContent = '⭐ Premium';
+    premiumBadge.style.cssText = `
+      background: linear-gradient(135deg, #ffd700, #ffed4e);
+      color: #1a202c;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-left: 1rem;
+      animation: glow 2s ease-in-out infinite alternate;
+    `;
+    document.querySelector('.nav-controls').appendChild(premiumBadge);
+  } else if (!isPremium && premiumBadge) {
+    premiumBadge.remove();
   }
+}
+
+// Settings System
+function initializeSettings() {
+  // Add settings button to navigation
+  const settingsBtn = document.createElement('button');
+  settingsBtn.className = 'settings-btn glass-element';
+  settingsBtn.innerHTML = '⚙️ Settings';
+  settingsBtn.addEventListener('click', showSettingsModal);
+  
+  const navControls = document.querySelector('.nav-controls');
+  navControls.insertBefore(settingsBtn, navControls.firstChild);
+}
+
+function showSettingsModal() {
+  // Remove existing modal if present
+  const existingModal = document.querySelector('.settings-modal');
+  if (existingModal) {
+    existingModal.remove();
+  }
+
+  const modal = document.createElement('div');
+  modal.className = 'settings-modal';
+  modal.innerHTML = `
+    <div class="modal-overlay">
+      <div class="modal-content glass-element">
+        <div class="modal-header">
+          <h2>⚙️ Settings</h2>
+          <button class="close-btn">&times;</button>
+        </div>
+        <div class="settings-content">
+          <div class="setting-group">
+            <h3>📝 Notes Management</h3>
+            <button class="setting-btn reset-notes-btn">🗑️ Reset All Notes</button>
+            <p class="setting-description">Clear all generated notes and start fresh</p>
+          </div>
+          
+          <div class="setting-group">
+            <h3>🎴 Flashcards Management</h3>
+            <button class="setting-btn reset-flashcards-btn">🗑️ Reset All Flashcards</button>
+            <p class="setting-description">Clear all generated flashcards</p>
+          </div>
+          
+          <div class="setting-group">
+            <h3>⭐ Premium Status</h3>
+            <div class="premium-status">
+              <span id="premium-status-text">Checking...</span>
+              <button class="setting-btn reset-premium-btn">🔄 Reset Premium Status</button>
+            </div>
+            <p class="setting-description">Manage your premium subscription</p>
+          </div>
+          
+          <div class="setting-group">
+            <h3>🎨 Theme Settings</h3>
+            <select id="settings-theme" class="theme-select">
+              <option value="dark">🌙 Dark Mode</option>
+              <option value="light">🌞 Light Mode</option>
+              <option value="solarized">🌅 Solarized</option>
+            </select>
+            <p class="setting-description">Choose your preferred theme</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+  
+  // Update premium status display
+  updatePremiumStatusDisplay();
+  
+  // Set current theme
+  const themeSelect = modal.querySelector('#settings-theme');
+  themeSelect.value = currentTheme;
+
+  // Add event listeners
+  const closeBtn = modal.querySelector('.close-btn');
+  const overlay = modal.querySelector('.modal-overlay');
+  
+  closeBtn.addEventListener('click', () => modal.remove());
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) modal.remove();
+  });
+  
+  // Settings actions
+  modal.querySelector('.reset-notes-btn').addEventListener('click', resetNotes);
+  modal.querySelector('.reset-flashcards-btn').addEventListener('click', resetFlashcards);
+  modal.querySelector('.reset-premium-btn').addEventListener('click', resetPremiumStatus);
+  
+  themeSelect.addEventListener('change', (e) => {
+    const selectedTheme = e.target.value;
+    currentTheme = selectedTheme;
+    document.body.setAttribute('data-theme', selectedTheme);
+    localStorage.setItem('selectedTheme', selectedTheme);
+    
+    // Update main theme dropdown
+    const mainThemeDropdown = document.getElementById('themeDropdown');
+    if (mainThemeDropdown) {
+      mainThemeDropdown.value = selectedTheme;
+    }
+    
+    showNotification(`Theme changed to ${selectedTheme}`, 'success');
+  });
+}
+
+function updatePremiumStatusDisplay() {
+  const statusText = document.getElementById('premium-status-text');
+  if (!statusText) return;
+  
+  const premiumStatus = localStorage.getItem('premiumStatus');
+  const premiumExpiry = localStorage.getItem('premiumExpiry');
+  
+  if (premiumStatus && premiumExpiry) {
+    const expiryDate = new Date(premiumExpiry);
+    const now = new Date();
+    
+    if (now < expiryDate) {
+      statusText.innerHTML = `✅ ${premiumStatus.charAt(0).toUpperCase() + premiumStatus.slice(1)} Plan Active<br><small>Expires: ${expiryDate.toLocaleDateString()}</small>`;
+      statusText.style.color = 'var(--accent-primary)';
+    } else {
+      statusText.innerHTML = '❌ Premium Expired';
+      statusText.style.color = 'var(--text-secondary)';
+    }
+  } else {
+    statusText.innerHTML = '❌ No Premium Subscription';
+    statusText.style.color = 'var(--text-secondary)';
+  }
+}
+
+function resetNotes() {
+  const notesSection = document.getElementById('generated-notes-section');
+  const notesContent = document.getElementById('notes-content');
+  const topicInput = document.getElementById('notes-topic');
+  
+  if (notesSection) notesSection.style.display = 'none';
+  if (notesContent) notesContent.innerHTML = '';
+  if (topicInput) topicInput.value = '';
+  
+  showNotification('All notes have been reset!', 'success');
+}
+
+function resetFlashcards() {
+  const flashcardsSection = document.getElementById('flashcards-section');
+  const flashcardsContainer = document.getElementById('flashcards-container');
+  const studyNotes = document.getElementById('study-notes');
+  
+  if (flashcardsSection) flashcardsSection.style.display = 'none';
+  if (flashcardsContainer) flashcardsContainer.innerHTML = '';
+  if (studyNotes) studyNotes.value = '';
+  
+  currentFlashcards = [];
+  
+  showNotification('All flashcards have been reset!', 'success');
+}
+
+function resetPremiumStatus() {
+  localStorage.removeItem('premiumStatus');
+  localStorage.removeItem('premiumExpiry');
+  updatePremiumUI(false);
+  updatePremiumStatusDisplay();
+  
+  showNotification('Premium status has been reset!', 'info');
+}
+
+// About Modal System
+function initializeAboutModal() {
+  // Add about button to navigation
+  const aboutBtn = document.createElement('button');
+  aboutBtn.className = 'about-btn glass-element';
+  aboutBtn.innerHTML = 'ℹ️ About';
+  aboutBtn.addEventListener('click', showAboutModal);
+  
+  const navControls = document.querySelector('.nav-controls');
+  navControls.appendChild(aboutBtn);
+}
+
+function showAboutModal() {
+  // Remove existing modal if present
+  const existingModal = document.querySelector('.about-modal');
+  if (existingModal) {
+    existingModal.remove();
+  }
+
+  const modal = document.createElement('div');
+  modal.className = 'about-modal';
+  modal.innerHTML = `
+    <div class="modal-overlay">
+      <div class="modal-content glass-element">
+        <div class="modal-header">
+          <h2>ℹ️ About AI Study Buddy</h2>
+          <button class="close-btn">&times;</button>
+        </div>
+        <div class="about-content">
+          <div class="about-section">
+            <h3>🤖 What is AI Study Buddy?</h3>
+            <p>AI Study Buddy is an intelligent learning companion that transforms your study notes into interactive flashcards and generates comprehensive study materials using advanced AI technology.</p>
+          </div>
+          
+          <div class="about-section">
+            <h3>✨ Features</h3>
+            <ul>
+              <li>🧠 AI-powered flashcard generation</li>
+              <li>📝 Intelligent notes generator</li>
+              <li>📄 PDF export capabilities</li>
+              <li>🎨 Multiple themes and customization</li>
+              <li>⭐ Premium features for enhanced learning</li>
+            </ul>
+          </div>
+          
+          <div class="about-section">
+            <h3>👨‍💻 Developer</h3>
+            <div class="developer-info">
+              <p><strong>Email:</strong> <a href="mailto:your.email@example.com">your.email@example.com</a></p>
+              <p>Passionate about creating innovative educational technology solutions.</p>
+            </div>
+          </div>
+          
+          <div class="about-section">
+            <h3>🚀 Version</h3>
+            <p>Version 2.0.0 - Enhanced with premium features and improved AI capabilities</p>
+          </div>
+          
+          <div class="about-section">
+            <h3>📞 Support</h3>
+            <p>Need help? Contact us at <a href="mailto:support@aistudybuddy.com">support@aistudybuddy.com</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  // Add event listeners
+  const closeBtn = modal.querySelector('.close-btn');
+  const overlay = modal.querySelector('.modal-overlay');
+  
+  closeBtn.addEventListener('click', () => modal.remove());
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) modal.remove();
+  });
 }
 
 // Theme Management
@@ -327,6 +587,10 @@ function initializeNotesGenerator() {
     // Simulate processing time
     await new Promise(resolve => setTimeout(resolve, 1500));
     
+    if (!topic || topic.trim().length < 3) {
+      throw new Error('Please provide a more specific topic');
+    }
+    
     const topicCapitalized = topic.charAt(0).toUpperCase() + topic.slice(1);
     const complexity = level === 'basic' ? 'fundamental' : level === 'advanced' ? 'comprehensive' : 'detailed';
     
@@ -334,69 +598,99 @@ function initializeNotesGenerator() {
     
     // Introduction
     notes += `<h2>Introduction</h2>\n`;
-    notes += `<p>${topicCapitalized} is an important concept that requires ${complexity} understanding. This study guide provides essential information and key insights about ${topic}.</p>\n\n`;
+    notes += `<p>${topicCapitalized} is an important concept that requires ${complexity} understanding. This comprehensive study guide provides essential information, key insights, and practical knowledge about ${topic} to enhance your learning experience.</p>\n\n`;
     
     // Core Concepts
     notes += `<h2>Core Concepts</h2>\n`;
     notes += `<h3>Definition</h3>\n`;
-    notes += `<p>${topicCapitalized} can be defined as a fundamental concept with specific characteristics and applications in its field of study.</p>\n\n`;
+    notes += `<p>${topicCapitalized} encompasses key principles and methodologies that form the foundation of understanding in this subject area. It involves systematic approaches and evidence-based practices.</p>\n\n`;
     
     notes += `<h3>Key Principles</h3>\n`;
     notes += `<ul>\n`;
-    notes += `<li>Primary characteristics and properties</li>\n`;
-    notes += `<li>Underlying mechanisms and processes</li>\n`;
-    notes += `<li>Important relationships and connections</li>\n`;
-    notes += `<li>Practical applications and significance</li>\n`;
+    notes += `<li><strong>Fundamental Properties:</strong> Core characteristics that define ${topic}</li>\n`;
+    notes += `<li><strong>Mechanisms:</strong> Underlying processes and how they function</li>\n`;
+    notes += `<li><strong>Relationships:</strong> Connections with related concepts and systems</li>\n`;
+    notes += `<li><strong>Applications:</strong> Real-world uses and practical significance</li>\n`;
+    notes += `<li><strong>Impact:</strong> Effects and implications in various contexts</li>\n`;
     notes += `</ul>\n\n`;
     
     // Key Terms
-    notes += `<h2>Important Terms</h2>\n`;
+    notes += `<h2>Key Terminology</h2>\n`;
+    notes += `<div class="terminology-box">\n`;
     notes += `<ul>\n`;
-    notes += `<li><strong>${topicCapitalized}:</strong> The main concept being studied</li>\n`;
-    notes += `<li><strong>Application:</strong> Practical uses and implementations</li>\n`;
-    notes += `<li><strong>Process:</strong> The methods and procedures involved</li>\n`;
-    notes += `<li><strong>Significance:</strong> The importance and relevance</li>\n`;
-    notes += `</ul>\n\n`;
+    notes += `<li><strong>${topicCapitalized}:</strong> The primary subject of study with distinct characteristics</li>\n`;
+    notes += `<li><strong>Methodology:</strong> Systematic approaches used in this field</li>\n`;
+    notes += `<li><strong>Framework:</strong> Structural foundation for understanding concepts</li>\n`;
+    notes += `<li><strong>Implementation:</strong> Practical application of theoretical knowledge</li>\n`;
+    notes += `<li><strong>Analysis:</strong> Critical examination and evaluation methods</li>\n`;
+    notes += `</ul>\n`;
+    notes += `</div>\n\n`;
     
     // Examples if requested
     if (withExamples) {
       notes += `<h2>Examples</h2>\n`;
       notes += `<div class="example-box">\n`;
-      notes += `<h3>Example 1: Real-World Application</h3>\n`;
-      notes += `<p>Consider how ${topic} manifests in everyday situations. This concept can be observed in various contexts and has practical applications.</p>\n`;
+      notes += `<h3>📋 Example 1: Practical Application</h3>\n`;
+      notes += `<p>In real-world scenarios, ${topic} demonstrates its relevance through practical applications. For instance, professionals in this field utilize these principles to solve complex problems and achieve measurable outcomes.</p>\n`;
       notes += `</div>\n\n`;
       
       notes += `<div class="example-box">\n`;
-      notes += `<h3>Example 2: Case Study</h3>\n`;
-      notes += `<p>A detailed analysis of ${topic} shows how this concept applies in specific scenarios and demonstrates its key characteristics.</p>\n`;
+      notes += `<h3>🔍 Example 2: Case Study Analysis</h3>\n`;
+      notes += `<p>Research studies have shown that ${topic} plays a crucial role in various contexts. Case studies demonstrate successful implementation strategies and highlight best practices for optimal results.</p>\n`;
+      notes += `</div>\n\n`;
+      
+      notes += `<div class="example-box">\n`;
+      notes += `<h3>💡 Example 3: Innovation & Development</h3>\n`;
+      notes += `<p>Recent developments in ${topic} have led to innovative approaches and breakthrough solutions. These advancements showcase the evolving nature and future potential of this field.</p>\n`;
       notes += `</div>\n\n`;
     }
     
     // Diagram descriptions if requested
     if (withDiagrams) {
-      notes += `<h2>Visual Representations</h2>\n`;
+      notes += `<h2>📊 Visual Learning Aids</h2>\n`;
       notes += `<div class="diagram-description">\n`;
-      notes += `<h3>Conceptual Diagram</h3>\n`;
-      notes += `<p>🧠 A visual representation showing the relationships between different aspects of ${topic} and how they connect to form a comprehensive understanding.</p>\n`;
+      notes += `<h3>🧠 Conceptual Framework</h3>\n`;
+      notes += `<p>A comprehensive visual map illustrating the interconnected relationships between core components of ${topic}. This framework helps visualize how different elements work together to create a unified understanding.</p>\n`;
       notes += `</div>\n\n`;
       
       notes += `<div class="diagram-description">\n`;
-      notes += `<h3>Process Flow</h3>\n`;
-      notes += `<p>⚡ A flowchart illustrating the processes, steps, or procedures involved in ${topic}, showing the logical flow and key decision points.</p>\n`;
+      notes += `<h3>⚡ Process Workflow</h3>\n`;
+      notes += `<p>A detailed flowchart demonstrating the step-by-step processes involved in ${topic}. This visual guide shows logical sequences, decision points, and optimal pathways for implementation.</p>\n`;
+      notes += `</div>\n\n`;
+      
+      notes += `<div class="diagram-description">\n`;
+      notes += `<h3>📈 Impact Analysis</h3>\n`;
+      notes += `<p>Visual representation of the effects and outcomes related to ${topic}. This analysis chart helps understand cause-and-effect relationships and measure success indicators.</p>\n`;
       notes += `</div>\n\n`;
     }
     
-    // Summary
-    notes += `<h2>Summary</h2>\n`;
-    notes += `<p>In conclusion, ${topic} is a significant concept that requires thorough understanding of its fundamental principles and applications. Key takeaways include:</p>\n`;
+    // Study Tips
+    notes += `<h2>📚 Study Tips & Strategies</h2>\n`;
+    notes += `<div class="study-tips">\n`;
     notes += `<ul>\n`;
-    notes += `<li>Understanding the basic definition and core principles</li>\n`;
-    notes += `<li>Recognizing practical applications and real-world relevance</li>\n`;
-    notes += `<li>Appreciating the broader context and significance</li>\n`;
-    notes += `<li>Applying knowledge to solve problems and analyze situations</li>\n`;
+    notes += `<li><strong>Active Learning:</strong> Engage with the material through practice and application</li>\n`;
+    notes += `<li><strong>Spaced Repetition:</strong> Review concepts at increasing intervals for better retention</li>\n`;
+    notes += `<li><strong>Connection Making:</strong> Link new information to existing knowledge</li>\n`;
+    notes += `<li><strong>Practice Testing:</strong> Use flashcards and quizzes to reinforce learning</li>\n`;
+    notes += `<li><strong>Real-world Application:</strong> Find practical examples in daily life</li>\n`;
+    notes += `</ul>\n`;
+    notes += `</div>\n\n`;
+    
+    // Summary
+    notes += `<h2>🎯 Key Takeaways</h2>\n`;
+    notes += `<p>Understanding ${topic} requires a comprehensive approach that combines theoretical knowledge with practical application. This study guide has covered essential aspects to build a solid foundation:</p>\n`;
+    notes += `<ul>\n`;
+    notes += `<li>✅ <strong>Conceptual Mastery:</strong> Grasp fundamental definitions and core principles</li>\n`;
+    notes += `<li>✅ <strong>Practical Application:</strong> Understand real-world implementations and uses</li>\n`;
+    notes += `<li>✅ <strong>Critical Analysis:</strong> Develop skills to evaluate and assess information</li>\n`;
+    notes += `<li>✅ <strong>Problem Solving:</strong> Apply knowledge to address challenges and scenarios</li>\n`;
+    notes += `<li>✅ <strong>Continuous Learning:</strong> Build foundation for advanced study and research</li>\n`;
     notes += `</ul>\n\n`;
     
-    notes += `<p><em>Generated by AI Study Buddy - Your intelligent learning companion</em></p>`;
+    notes += `<div class="footer-note">\n`;
+    notes += `<p><em>📖 Generated by AI Study Buddy - Your intelligent learning companion</em></p>\n`;
+    notes += `<p><em>💡 Remember: Effective learning combines understanding, practice, and application!</em></p>\n`;
+    notes += `</div>`;
     
     return notes;
   }
