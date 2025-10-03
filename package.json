@@ -17,6 +17,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@supabase/supabase-js": "^2.58.0",
     "intasend-node": "^1.1.2"
   }
 }

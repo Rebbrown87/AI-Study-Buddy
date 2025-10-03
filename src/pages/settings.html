@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings - LikaAI</title>
+  <link rel="stylesheet" href="../../styles.css" />
+  <link rel="stylesheet" href="../styles/settings.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body data-theme="dark">
+  <div class="animated-bg">
+    <div class="bg-layer layer-1"></div>
+    <div class="bg-layer layer-2"></div>
+    <div class="bg-layer layer-3"></div>
+  </div>
+
+  <nav class="glass-nav">
+    <div class="nav-content">
+      <div class="logo">
+        <span class="logo-icon">🤖</span>
+        <span class="logo-text">LikaAI</span>
+      </div>
+      <div class="nav-controls">
+        <a href="/index.html" class="nav-link glass-element">Back to Home</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="settings-container">
+    <div class="settings-card glass-element">
+      <div class="settings-header">
+        <h1>Settings</h1>
+        <p>Manage your account and preferences</p>
+      </div>
+
+      <div class="settings-sections">
+        <section class="setting-section">
+          <h2>Account Information</h2>
+          <div id="account-info" class="account-info">
+            <div class="info-item">
+              <label>Name:</label>
+              <span id="user-name">Loading...</span>
+            </div>
+            <div class="info-item">
+              <label>Email:</label>
+              <span id="user-email">Loading...</span>
+            </div>
+            <div class="info-item">
+              <label>Phone:</label>
+              <span id="user-phone">Loading...</span>
+            </div>
+            <div class="info-item">
+              <label>Email Verified:</label>
+              <span id="email-verified">Loading...</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="setting-section">
+          <h2>Premium Subscription</h2>
+          <div id="subscription-info" class="subscription-info">
+            <p id="subscription-status">Loading...</p>
+            <button id="manage-subscription" class="action-btn">Manage Subscription</button>
+          </div>
+        </section>
+
+        <section class="setting-section">
+          <h2>Preferences</h2>
+          <div class="preferences-grid">
+            <div class="preference-item">
+              <label for="theme-select">Theme</label>
+              <select id="theme-select" class="preference-select">
+                <option value="dark">Dark</option>
+                <option value="light">Light</option>
+                <option value="solarized">Solarized</option>
+              </select>
+            </div>
+            <div class="preference-item">
+              <label for="notes-level-select">Default Notes Level</label>
+              <select id="notes-level-select" class="preference-select">
+                <option value="basic">Basic</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+              </select>
+            </div>
+            <div class="preference-item">
+              <label>
+                <input type="checkbox" id="include-examples-check">
+                Include Examples by Default
+              </label>
+            </div>
+            <div class="preference-item">
+              <label>
+                <input type="checkbox" id="include-diagrams-check">
+                Include Diagrams by Default
+              </label>
+            </div>
+            <div class="preference-item">
+              <label for="flashcard-difficulty">Flashcard Difficulty (1-5)</label>
+              <input type="range" id="flashcard-difficulty" min="1" max="5" value="3">
+              <span id="difficulty-value">3</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="setting-section">
+          <h2>Activity History</h2>
+          <div id="activity-logs" class="activity-logs">
+            <p>Loading activity history...</p>
+          </div>
+        </section>
+
+        <section class="setting-section danger-zone">
+          <h2>Danger Zone</h2>
+          <div class="danger-actions">
+            <button id="clear-data-btn" class="danger-btn">Clear All Data</button>
+            <button id="delete-account-btn" class="danger-btn">Delete Account</button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="../settings/settings.js"></script>
+</body>
+</html>

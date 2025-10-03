@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up - LikaAI</title>
+  <link rel="stylesheet" href="../../styles.css" />
+  <link rel="stylesheet" href="../styles/auth.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body data-theme="dark">
+  <div class="animated-bg">
+    <div class="bg-layer layer-1"></div>
+    <div class="bg-layer layer-2"></div>
+    <div class="bg-layer layer-3"></div>
+  </div>
+
+  <div class="auth-container">
+    <div class="auth-card glass-element">
+      <div class="auth-header">
+        <div class="logo-large">
+          <span class="logo-icon">🤖</span>
+          <h1>LikaAI</h1>
+        </div>
+        <p class="tagline">Transform Your Learning with AI</p>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="signup">Sign Up</button>
+        <button class="auth-tab" data-tab="login">Login</button>
+      </div>
+
+      <form id="signup-form" class="auth-form">
+        <h2>Create Your Account</h2>
+
+        <div class="form-group">
+          <label for="signup-name">Full Name</label>
+          <input type="text" id="signup-name" required placeholder="Enter your full name">
+        </div>
+
+        <div class="form-group">
+          <label for="signup-email">Email Address</label>
+          <input type="email" id="signup-email" required placeholder="your.email@example.com">
+        </div>
+
+        <div class="form-group">
+          <label for="signup-phone">Phone Number</label>
+          <input type="tel" id="signup-phone" required placeholder="+1234567890">
+        </div>
+
+        <div class="form-group">
+          <label for="signup-password">Password</label>
+          <input type="password" id="signup-password" required placeholder="Minimum 6 characters">
+        </div>
+
+        <div class="form-group">
+          <label for="signup-confirm-password">Confirm Password</label>
+          <input type="password" id="signup-confirm-password" required placeholder="Re-enter password">
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label>
+            <input type="checkbox" id="terms-checkbox" required>
+            <span>I agree to the Terms of Service and Privacy Policy</span>
+          </label>
+        </div>
+
+        <button type="submit" class="auth-btn primary-btn">
+          <span>Create Account</span>
+          <div class="btn-glow"></div>
+        </button>
+
+        <p class="auth-note">
+          Email verification will be sent to your inbox after registration.
+        </p>
+      </form>
+
+      <form id="login-form" class="auth-form" style="display: none;">
+        <h2>Welcome Back</h2>
+
+        <div class="form-group">
+          <label for="login-email">Email Address</label>
+          <input type="email" id="login-email" required placeholder="your.email@example.com">
+        </div>
+
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" required placeholder="Enter your password">
+        </div>
+
+        <div class="form-actions">
+          <label class="checkbox-group">
+            <input type="checkbox" id="remember-me">
+            <span>Remember me</span>
+          </label>
+          <a href="#" class="forgot-password">Forgot Password?</a>
+        </div>
+
+        <button type="submit" class="auth-btn primary-btn">
+          <span>Login</span>
+          <div class="btn-glow"></div>
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <p>Already have an account? <a href="#" class="switch-auth">Login</a></p>
+      </div>
+    </div>
+
+    <div id="verification-modal" class="modal" style="display: none;">
+      <div class="modal-overlay"></div>
+      <div class="modal-content glass-element">
+        <div class="modal-header">
+          <h2>Verify Your Email</h2>
+        </div>
+        <div class="modal-body">
+          <div class="verification-icon">📧</div>
+          <p>We've sent a verification link to your email address.</p>
+          <p><strong id="verification-email"></strong></p>
+          <p class="note">Please check your inbox and click the verification link to activate your account.</p>
+          <button id="resend-verification" class="auth-btn secondary-btn">Resend Verification Email</button>
+          <button id="close-modal" class="auth-btn primary-btn">Got It</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="../auth/auth.js"></script>
+</body>
+</html>

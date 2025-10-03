@@ -1233,3 +1233,72 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent-secondary);
 }
+
+/* Navigation Controls */
+.auth-nav-btn {
+  padding: 0.5rem 1.5rem;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-right: 1rem;
+  font-family: inherit;
+}
+
+.auth-nav-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.4);
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-right: 1rem;
+}
+
+.user-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.logout-btn {
+  padding: 0.5rem 1.5rem;
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border: 2px solid var(--glass-border);
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.logout-btn:hover {
+  border-color: var(--accent-primary);
+  background: var(--glass-bg);
+}
+
+.settings-btn,
+.feedback-btn {
+  padding: 0.5rem 0.75rem;
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border: 2px solid var(--glass-border);
+  border-radius: 8px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-right: 0.5rem;
+  font-family: inherit;
+}
+
+.settings-btn:hover,
+.feedback-btn:hover {
+  border-color: var(--accent-primary);
+  background: var(--glass-bg);
+  transform: translateY(-2px);
+}
