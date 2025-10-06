@@ -114,8 +114,28 @@ async function handleSignup(e) {
 
       await logActivity(authData.user.id, 'signup', { email, name });
 
+      try {
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+        await fetch(`${supabaseUrl}/functions/v1/notify-new-user`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${supabaseKey}`
+          },
+          body: JSON.stringify({ name, email, phone })
+        });
+      } catch (notifyError) {
+        console.error('Notification error:', notifyError);
+      }
+
       hideLoading();
-      showVerificationModal(email);
+      showNotification('Account created successfully!', 'success');
+
+      setTimeout(() => {
+        document.querySelector('[data-tab="login"]').click();
+        document.getElementById('login-email').value = email;
+      }, 1500);
     }
   } catch (error) {
     hideLoading();
@@ -155,30 +175,6 @@ async function handleLogin(e) {
     console.error('Login error:', error);
     showNotification(error.message || 'Invalid email or password', 'error');
   }
-}
-
-function showVerificationModal(email) {
-  const modal = document.getElementById('verification-modal');
-  const emailSpan = document.getElementById('verification-email');
-  const closeBtn = document.getElementById('close-modal');
-  const resendBtn = document.getElementById('resend-verification');
-
-  emailSpan.textContent = email;
-  modal.style.display = 'flex';
-
-  closeBtn.addEventListener('click', () => {
-    modal.style.display = 'none';
-    window.location.href = '/index.html';
-  });
-
-  resendBtn.addEventListener('click', async () => {
-    try {
-      showNotification('Resending verification email...', 'info');
-      showNotification('Verification email sent!', 'success');
-    } catch (error) {
-      showNotification('Error resending email', 'error');
-    }
-  });
 }
 
 function showLoading(message) {
