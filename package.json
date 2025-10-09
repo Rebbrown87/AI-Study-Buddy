@@ -4,9 +4,9 @@
   "description": "AI-powered flashcard generator for study notes",
   "main": "index.html",
   "scripts": {
-    "dev": "npx serve -s . -l 8000 --cors",
-    "build": "echo 'Build complete - static files ready'",
-    "preview": "npx serve -s . -l 8000"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "keywords": [
     "ai",
@@ -19,5 +19,8 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.58.0",
     "intasend-node": "^1.1.2"
+  },
+  "devDependencies": {
+    "vite": "^7.1.9"
   }
 }
